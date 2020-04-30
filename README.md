@@ -1,4 +1,4 @@
-# Laravel ePay, EasyPay, BPay, ePay World integration module
+# Laravel Encryptable by Fundamental Studio Ltd.
 Laravel Encryptable addon for easy encrypt/decrypt database values with as many as 4 lines of code.
 - Single trait to use within all your models.
 - Specify all attributes you want or you do not want to encrypt.

@@ -10,7 +10,10 @@ trait EncryptableTrait
 {
     public function setAttribute($attribute, $val)
     {
-        if ($this->shouldEncrypt) {
+        if (
+            ($this->encryptAll and !$this->shouldSkip($attribute))
+            or $this->shouldEncrypt($attribute)
+        ) {
             $val = $this->encrypt($val);
         }
 
@@ -48,7 +51,12 @@ trait EncryptableTrait
 
     public function shouldEncrypt($attribute)
     {
-        return in_array($attribute, $this->encryptable);
+        return in_array($attribute, $this->encryption);
+    }
+
+    public function shouldSkip($attribute)
+    {
+        return in_array($attribute, $this->skipEncryption) and (!in_array($attribute, [$this->primaryKey, 'created_at', 'updated_at', 'deleted_at']));
     }
 
     private function encrypt($data)

@@ -1,6 +1,6 @@
 {
     "name": "fundamental-studio/laravel-encryptable",
-    "description": "Laravel ",
+    "description": "Laravel Encryptable addon for easy encrypt/decrypt database values with as many as 4 lines of code.",
     "type": "library",
     "homepage": "https://www.fundamental.bg",
     "license": "MIT",
@@ -34,9 +34,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "nesbot/carbon": "^2.0",
-        "guzzlehttp/guzzle": "^6.5",
-        "illuminate/support": "^5.8|^6.0"
+        "illuminate/support": "^7.0"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0"

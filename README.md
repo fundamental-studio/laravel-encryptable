@@ -1,9 +1,13 @@
 # Laravel ePay, EasyPay, BPay, ePay World integration module
-Laravel wrapper for easy and seamless integration with all available ePay payment methods:
-- ePay
-- EasyPay(10 digit identification number)
-- BPay(Payment using ATM machine withdraw)
-- ePay World(Payment using debit/credit card)
+Laravel Encryptable addon for easy encrypt/decrypt database values with as many as 4 lines of code.
+- Single trait to use within all your models.
+- Specify all attributes you want or you do not want to encrypt.
+- Automatically encrypts the data on create/update.
+- Automatically decrypts the values on retrieve and attribute access.
+- Can be used with all available databases. Please, be aware of the length of your data.
+- Respects both: the casts and the dates fields.
+- Under the hood, it uses the Crypt trait from Laravel.
+- It respects the casts and mutations of your attributes.
 
 Made with love and code by [Fundamental Studio Ltd.](https://www.fundamental.bg)
 
@@ -17,98 +21,53 @@ $ composer require fmtl-studio/laravel-encryptable
 ```
 
 After installing, the package should be auto-discovered by Laravel.
-In order to configurate the package, you need to publish the config file using this command:
-``` bash
-$ php artisan vendor:publish --provider="Fundamental\Encryptable\EncryptableServiceProvider"
-```
-
-After publishing the config file, you should either add the needed keys to the global .env Laravel file:
-```
-EPAY_PRODUCTION=FALSE # Should the platform use the production or the test ePay endpoint
-EPAY_MIN=XXXXXXXXXX # Official KIN number from the ePay platform
-EPAY_SECRET=XXXXXXXXXX # Secret token from the ePay platform
-EPAY_DEFAULT_CURRENCY="BGN" # Default currency
-EPAY_DEFAULT_URL_OK="https://myurl.com/"
-EPAY_DEFAULT_URL_CANCEL="https://myurl.com/"
-EPAY_GENERATE_INVOICE=TRUE # Should the package generate random invoice number if one isn't presented
-EPAY_EXPIRATION_HOURS=72 # What is the period(in hours) that tha package should add to the current timestamp for an expiration date
-```
-
-You are up & running and ready to go.
+That's it. You are up & running and ready to go.
 
 ## Documentation and Usage instructions
 
 The usage of our package is pretty seamless and easy.
 First of all, you need to use the proper namespace for our package:
 ```
-use Fundamental\Epay\Epay;
+use Fundamental\Encryptable\Encryptable;
 ```
 
-Creating the instance of our package:
-``` php
-$epay = new Epay('paylogin', array $data, 'BG'); // Use either paylogin or credit_paydirect, the second parameter is documented in the next section and the third parameter is the request language page will be shown in: BG or EN, default: BG.
-$epay->setData(
-    1000000000, // Could be either number or false(will be auto-generated if EPAY_GENERATE_INVOICE=TRUE)
-    40.00, // Amount of the payment, double formatted either as double or string
-    '14.12.2019 20:46:00', // Could be either formatted date in d.m.Y H:i:s or false(will be auto-generated)
-    'Description of the payment in less than 100 symbols.', // Could be empty
-    'BGN', // Available currencies: BGN, USD, EUR, default to bgn, may be ommited
-    'utf-8' // Encoding, either null or utf-8, may be ommitted
-);
-```
-The setData function could be ommitted. The data may be set as array and second parameter to the constructor of the main class.
-``` php
-$epay = new Epay('paylogin', [
-    'invoice' => 1000000000, // Could be either number or false(will be auto-generated if EPAY_GENERATE_INVOICE=TRUE)
-    'amount' => 40.00, // Amount of the payment, double formatted either as double or string
-    'expiration' => '14.12.2019 20:46:00', // Could be either formatted date in d.m.Y H:i:s or false(will be auto-generated)
-    'description' => 'Description of the payment in less than 100 symbols.' // Could be empty
-]);
-```
-All available methods are shown into the next section, including setter and getter methods.
+After that, use the trait inside your Eloquent Model, like this:
 
-Retrieve the correct and formatted hidden fields, form, or array with all the needed parameters.
-``` php
-// Both, URL OK and URL Cancel can be ommitted as not required by the ePay platform.
+```php
+class User extends Model
+{
+    use Encryptable;
 
-// Would return all hidden fields as formatted html
-$epay->generatePaymentFields('https://ok.url', 'https://cancel.url');
-
-// Would return html form with the first parameter as id
-$epay->generatePaymentForm('#form-id', 'https://ok.url', 'https://cancel.url');
-
-// Would return array with all needed parameters for the platform request you need to do on your own
-$epay->getPaymentParameters();
-```
-All available methods are shown into the next section.
-
-All current requests can be used as a form for redirecting the user to the ePay platform, including:
-- Payment through your ePay account
-- BPay code for ATM withdraw using 6 digit code
-- Payment through debit/credit card throught ePay World (If ePay World is included into your ePay contract)
-- EasyPay tab, which will give you 10 digit code for payment
-
-However, if you need and want to integrate your platform with the EasyPay 10 digit code yourself, you can use:
-``` php
-// Using the initialization code from the upper piece of code
-$easyPayIDN = $epay->requestIDNumber(); // Returning the 10 digit number for EasyPay payment or throws an exception
-$epay->getEasypayIDN(); // Available method if needed and not assigned the requestIDNumber() to a variable
+    // The rest of your model.
+}
 ```
 
-It is also possible to parse the return results and output them as array:
-``` php
-// Would like the $response array to have two members encoded and checksum.
-$results = Fundamental\Epay\Epay::parseResult($response); // Will return full array of data, if the checksum check equals true
+Then, you can specify the attributes you want to encrypt or just those that you do not want to:
+```php
+protected $encryption = [
+    'attribute_1', 'attribute_2', 'attribute_3'
+];
 ```
 
-All available methods are shown into the next section.
+You can also specify:
+```php
+protected $encryptAll = true;
+```
+
+And the use the skipEncryption rule for those which should be ommitted.
+```php
+protected $skipEncryption = [
+    'attribute_4', 'attribute_5'
+];
+```
+
+By default, the id and the timestamp fields are ommitted.
 
 ## Methods
-All available methods with their arguments and return formats.
+The package is as simple as possible. It contains a trait, which is overriding the default setAttribute and getAttributeValue methods.
+You can find more about them at [Laravel API Documentation](https://laravel.com/api/7.x/Illuminate/Database/Eloquent/Model.html).
 
-``` php
-
-```
+There aren't any public exposed methods you should use.
 
 ## Changelog
 All changes are available in our Changelog file.

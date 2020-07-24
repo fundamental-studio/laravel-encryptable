@@ -17,7 +17,7 @@ The package is compatible with Laravel 7+ version.
 
 Via composer:
 ``` bash
-$ composer require fmtl-studio/laravel-encryptable
+$ composer require fundamental-studio/laravel-encryptable
 ```
 
 After installing, the package should be auto-discovered by Laravel.
